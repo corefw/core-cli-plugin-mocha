@@ -1,0 +1,44 @@
+language: node_js
+node_js:
+  - 8
+branches:
+  only:
+    - master
+before_install:
+  - chmod 0777 ./scripts -R
+  - npm config set //registry.npmjs.org/:_authToken $NPM_API_KEY
+install:
+#- yarn --version
+#- yarn install --non-interactive
+script:
+  - npm test && npm run ci:docs
+deploy:
+  - provider: npm
+    email: luke@c2cschools.com
+    skip_cleanup: true
+    api_key: "$NPM_API_KEY"
+    on:
+      all_branches: true
+  - provider: s3
+    access_key_id: "$AWS_ACCESS_KEY_ID"
+    secret_access_key: "$AWS_SECRET_ACCESS_KEY"
+    bucket: developer.c2cs.io
+    skip_cleanup: true
+    acl: public_read
+    default_text_charset: utf-8
+    region: us-east-1
+    upload-dir: docs/source/core-common
+    local_dir: docs/html
+    on:
+      all_branches: true
+env:
+  global:
+    # NPM_API_KEY
+    - secure: "icjJaAnDjS2qMLBKa5FsjPBrGqhHnAEkRTirx6NkUg9ybyzIyTVxPXxq+gSDjeZfq02D4Jlcv9TkolQaHHJFvyKn9+46ZOqd9OeQoN1gdb/5dCTsAWilLI2lkJolWI1bp8enUmdWNyCle2Qzp+ejAo22ERX3SCjR1q4Ly28qkr+lWyFbSqHNmapb4aRKZi8nq+YW6J41buZwoIE5CliDtUPd2h1VtawO7CcrDkUVpD2xmwNsQOBSr4gWvCacdaC3lgJN78U43jE/rZEjALV3FMcO5Qk0bD80Cd4XEvexSSBFpV+wIq7kOx7v2yWXpOYvnwi52GP2KmxMeSzF3z2vM/np6GKdSdGGKi6QgwiWQCr21oK2gUzfi5bEvu9tWyH1De2xa0l4vHmiJRwCmpaqxagDSWW8IU3DIbbeiBbgmh40iOI6C3NlXeS4WrbJBMBxXDnvGEcSN9/JoY5izc2qYYCOTDC1t/yUPKENQoOXCOHix1qoQrPEaVt7XWXGaT5wseaCV6SICoLtC1q3l3grUBJqyr/CyoC6QuGM379LO1HgWDUl3s5V1LhzGgY6ogR1m0vicBFCXU677mYK8O4rhtzCkBE8S+Bu2d8ucQ8jGOHpI+a/67bEOeAS/bPucWVqDAmWugu4ex4gSGHAhuAo0vM1lHVrbakd6Rox0WIS7CA="
+    # AWS_ACCESS_KEY_ID
+    - secure: "jmDJUIDQ0d7BnI6bZwPYJq5tiqxnpwN0Sah3VR3LM2vL+ecQnyoral2DEwpw4fCRjQ4yq4ZsRizFecEVjLIn09uB0q9aADj2zNwrJISAncJt8wVrLKARFUDWLDE0GnsK7vO6LYr7mQ/1H3UllZ4kNdNe9cCHhJwWaNY5vraVAr2o3GC+9+F5WiKYjgjcBQ0ECSRJUjpTXJpuHaL/7zR+ly+1T1dJktYIVv8XNuFAgZPeH8wUecHc0rPjXSf80DSioc3i00cJ9naJ91bTuD48f2cS0Z6pLUaPdOZojPyJE7KINP+OWFF5moLY4/4dTvmnfvXKvJsThWPfQQG2/C2zHSGXPniKEe2nqzXENSYLRnZZd6gyguj9VN2q+iX6hAr3MqJKLt2tGwYboLMsgE8EwaUmQ3wnHqNGkO2XQBap3NgfEuge9FcWXRdzl9tMDWu+LpLIZz+jCb593nn5LoFJNhae6+SkN8MDFCeBgfiJE+wSWYj+xkfuVQhDtX5DEPA2gkUkqZJcBkHjEpmlrs5VfBUmGpLPTRoWcTWxa1KI4BQOxudbuDK1hv7zTyfMnKKsVU+SKbnq6Q2XjcFzTQpVDqAdSmGk5DAT9pbYssf0FZFe4QLqK/0wICRt8knAFJE0PpWSuMzmVkWRntRgcjW2Vyd9EAhZn8TwEq3TJAtwwkc="
+    # AWS_SECRET_ACCESS_KEY
+    - secure: "KsDAMBVoRtvZicj4FIugdIZbwCTTA7iuI0Xi4wRA0hZ5616q3ltyrl6F3SLbRm7af3deEd1eXU4WVRhhxre7yqPlTp9FEy97myAj8A0GvwAOjd6x8AhKAXVWtd422sIo10bVlnkmW5FMhg8YX2FkgvlqxXVVw7M151Dk9SB2uCF80qOZ78LtdMM1rbK0VfXYmyMYVVhQXW/ZuQ6AkEfEgit88pRyU3f3ZOxtF+7JU+BcdXQIeMhkpEZdZAafhZKF5cCmF15dtmFmnpV4atzw12LlZq45Gfhop9/mOiVpgEuqaJjkfQ97DMNlHAs8cCaTGOjpDC0QGzaDK3UgXiroD3sX/m/UTMGZNMMe9z4C13MrIqUzE+zaxGjMJMezAmt2ZFkBWil9V7j7Y9WS/Z2y+Y5W3K4YO2O40Cm47rSGF7JxyOuJBnSckquYTF2iaEeBHF6td6RnC9bcFIzp1Aj0Umy0FBnZyEt6cOXRUxmWWj8GgidjKRP4MXCmxeRhzFYh4jwAk2MmRpNGhpcQ7ReDhwc5cMF+wnXtaUIZDGwO7UWjwYjDyv6o8UkgfbwdTsQGGuPUcDMCxRuATEzPZ8x5Cl99VflKFQN0RDqZpD1exqLYvKzqgjusmLI25RR8Ba06rGxX9G1pjNZyvayY58yXP9RukfJx06BHK18ti27nyn0="
+notifications:
+  slack:
+    secure: "GGplq6Qm2iI4h1zEf53kxQq/9x8xF7nueGL0NGmD4NoTLsBGt6YpIaYVZ80PGMH6qjEoMXbzYso229rtOTZrpB7zvAMo/o4JqTrYkfaca069TU396g9DxTvN1EwmQ7rb25tzOyrXZf8IwWGP4Lt0ErVrovrqCvV3+bRlYu9wG+lfb71pe5/8hqvtkr/6F+SpUGGzGa/8HUazNdwsTFrWY7A0Plou6VyPszJ+Jyrfd3yVsvGBvKL1wKMUqk0cNde6HrYYWXyqRh5djptInu8Kl90sVqzwfDfeRLWx5n1GYWh6/2MX1Zjl4xF5F9Mokp0hk/qSJbiTsTJJBeUR2W72dcDYQIervN+etBLjkbf7uNKfCA4lMA+/yloe2GFvQBvdKz3x9hqr6moWPdF5YbGJShjw9DAhVUNymtiZ2ToA5wHGh1+wGGD2wdETv3I9nzB2XPgR+ol2x208cNmha/RB+RUh6dbyuJn4IIA1RyJbA+8btKE65FZwdxEqXvpM9Tk51viKQRZL70ZKhNUO/TiVSgfBx6kl5mBfcUNqtKrYpC5WSFEBz8YKL/CWDYRaWnk9zeuRstOMTxmbkGEiq2ihS3HOu3IDz6dwkwkftsv6nTKzi9yRUUdwpW/3WAqCWFTVraU4XwHLNMEIhJFD+64OtyAAIjkf3Jb3b7TsY6JLjqM="

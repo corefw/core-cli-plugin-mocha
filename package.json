@@ -1,0 +1,29 @@
+{
+	"name": "@corefw/core-cli-plugin-mocha",
+	"version": "6.0.0",
+	"description": "A plugin for the Core CLI utility that facilitates unit testing via Mocha and Chai",
+	"license": "MIT",
+	"author": "Luke Chavers <luke@c2cschools.com>",
+	"contributors": [
+		"Kevin Sanders <kevin@c2cschools.com>"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/corefw/core-cli-plugin-mocha.git"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"bugs": {
+		"url": "https://github.com/corefw/core-cli-plugin-mocha/issues"
+	},
+	"homepage": "https://github.com/corefw/core-cli-plugin-mocha#readme",
+	"main": "./lib/index.js",
+	"engines": {
+		"node": ">=8"
+	},
+	"dependencies": {
+		"chai": "^4.2.0",
+		"mocha": "^6.0.2"
+	}
+}
